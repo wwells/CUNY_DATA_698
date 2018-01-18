@@ -1,0 +1,85 @@
+---
+title: "NN in R"
+author: "Walt Wells, 2018"
+output:
+  html_document:
+    css: ../custom.css
+    highlight: zenburn
+    theme: lumen
+---
+
+# Environment Prep
+
+```{r, message=F, warning=F}
+if (!require('ISLR')) install.packages('ISLR')
+if (!require('caTools')) install.packages('caTools')
+if (!require('neuralnet')) install.packages('neuralnet')
+```
+
+based on blogpost: 
+https://www.kdnuggets.com/2016/08/begineers-guide-neural-networks-r.html
+# Load Data
+
+```{r}
+print(head(College, 2))
+```
+
+# Data Prep
+
+```{r}
+maxs <- apply(College[,2:18], 2, max)
+mins <- apply(College[,2:18], 2, min)
+
+scaled.data <- as.data.frame(scale(College[,2:18], 
+                                  center = mins, 
+                                  scale = maxs - mins))
+
+head(scaled.data, 2)
+```
+
+```{r}
+Private <- as.numeric(College$Private) - 1
+data <- cbind(Private, scaled.data)
+```
+
+# Split 
+
+```{r}
+set.seed(121)
+split <- sample.split(data$Private, SplitRatio = 0.70)
+
+train = subset(data, split==TRUE)
+test = subset(data, split==FALSE)
+```
+
+# Helper:   Regression Function Formula
+
+```{r}
+feats <- names(scaled.data)
+
+f <- paste(feats, collapse = ' + ')
+f <- paste('Private ~', f)
+f <- as.formula(f)
+f
+```
+
+## Train Net
+
+```{r}
+nn <- neuralnet(f, train, 
+                hidden = c(5),
+                learningrate = .05,
+                linear.output = FALSE)
+```
+
+```{r}
+predicted.nn.values <- compute(nn, test[2:18])
+predicted.nn.values$net.result <- sapply(predicted.nn.values$net.result,round,digits=0) # round our predictions
+table(test$Private, predicted.nn.values$net.result)
+```
+
+## Visualize the Net
+
+```{r}
+plot(nn)
+```
