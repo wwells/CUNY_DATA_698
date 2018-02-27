@@ -6,7 +6,7 @@ output:
   pdf_document: default
 ---
 
-A significant byproduct of Moore's law is how large scale computation is now considerably less expensive and is accessible to anyone with a credit card and a laptop.  As a result, computationally expensive modeling techniques like deep learning that can accurately model highly dimensional data like images, video, and audio are becoming increasingly available.
+A significant byproduct of Moore's law is how large scale computation is now considerably less expensive and is accessible to anyone with a credit card and a laptop.  As a result, computationally intensive modeling techniques like deep learning that can accurately model highly dimensional data like images, video, and audio are becoming increasingly available.
 
 ## Problem
 
