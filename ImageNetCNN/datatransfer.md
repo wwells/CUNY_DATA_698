@@ -20,11 +20,11 @@ Compare MD5sum against those granted for research.
 md5sum [filename.tar]
 ```
 
-## 2a. Untar Archive (Validation / Test)
+## 2a. Untar Archive (Validation)
 
 ```
-mkdir [validation_or_test]
-tar -xf file_name.tar -C [validation_or_test]
+mkdir validation
+tar -xf file_name.tar -C validation
 ```
 
 ## 2b. Untar Archive and Dirs Underneath (Training)
@@ -32,7 +32,7 @@ tar -xf file_name.tar -C [validation_or_test]
 Special thanks to [Arun Das](https://github.com/arundasan91/Deep-Learning-with-Caffe/blob/master/Imagenet/How-to-properly-set-up-Imagenet-Dataset.md)
 
 ```
-mkdir [train]
+mkdir train
 cd train/
 ```
 
@@ -63,5 +63,5 @@ Run the script.
 ## 3.  Rsynch to Google Storage
 
 ```
-gsutil -m rsync . gs://image_net/[validation_or_test_or_train]
+gsutil -m rsync . gs://image_net/[validation_or_train]
 ```
