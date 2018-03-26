@@ -33,10 +33,11 @@ Special thanks to [Arun Das](https://github.com/arundasan91/Deep-Learning-with-C
 
 ```
 mkdir train
+tar -xfv train.tar -C train/
 cd train/
 ```
 
-Copy the following and paste it into a file (ex. tar_extract_script.sh).
+Extracts the tar into the train dir.   To then untar the dir for each class, copy the following and paste it into a file (ex. tar_extract_script.sh).
 
 ```
 #!/bin/bash
@@ -63,5 +64,6 @@ Run the script.
 ## 3.  Rsynch to Google Storage
 
 ```
+rm /train/tar_extract_script.sh
 gsutil -m rsync . gs://image_net/[validation_or_train]
 ```
