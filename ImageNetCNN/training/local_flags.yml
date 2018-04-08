@@ -1,0 +1,9 @@
+image_height: 64
+image_width: 64
+num_classes: 200
+num_training: 100000
+num_val: 10000
+batch_size: 50
+epochs: 20
+train_dir:  "~/Dropbox/CUNY/DATA-698_DeepLearning/Data/tiny-imagenet-200/train"
+validation_dir:  "~/Dropbox/CUNY/DATA-698_DeepLearning/Data/tiny-imagenet-200/validation"

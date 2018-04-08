@@ -1,0 +1,50 @@
+trainingInput:
+  scaleTier: CUSTOM
+  masterType: standard_gpu
+  hyperparameters:
+    goal: MAXIMIZE
+    hyperparameterMetricTag: top_5_categorical_accuracy
+    maxTrials: 10
+    maxParallelTrials: 2
+    enableTrialEarlyStopping:  TRUE
+    params:
+      - parameterName: learning_rate
+        type: DOUBLE
+        minValue: 0.001
+        maxValue: 0.1
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: dropout_rate
+        type: DOUBLE
+        minValue: 0.1
+        maxValue: 0.6
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: initial_kernel_size
+        type: INTEGER
+        minValue: 3
+        maxValue: 6
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: filter_layer1
+        type: INTEGER
+        minValue: 32
+        maxValue: 64
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: filter_layer2
+        type: INTEGER
+        minValue: 32
+        maxValue: 128
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: filter_layer3
+        type: INTEGER
+        minValue: 64
+        maxValue: 256
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: filter_layer4
+        type: INTEGER
+        minValue: 128
+        maxValue: 512
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: filter_dense
+        type: INTEGER
+        minValue: 512
+        maxValue: 1024
+        scaleType: UNIT_LINEAR_SCALE

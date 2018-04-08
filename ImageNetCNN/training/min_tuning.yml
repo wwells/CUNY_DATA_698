@@ -1,0 +1,20 @@
+trainingInput:
+  scaleTier: CUSTOM
+  masterType: standard_gpu
+  hyperparameters:
+    goal: MAXIMIZE
+    hyperparameterMetricTag: top_5_categorical_accuracy
+    maxTrials: 10
+    maxParallelTrials: 1
+    enableTrialEarlyStopping:  TRUE
+    params:
+      - parameterName: learning_rate
+        type: DOUBLE
+        minValue: 0.001
+        maxValue: 0.1
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: dropout_rate
+        type: DOUBLE
+        minValue: 0.1
+        maxValue: 0.6
+        scaleType: UNIT_LINEAR_SCALE
