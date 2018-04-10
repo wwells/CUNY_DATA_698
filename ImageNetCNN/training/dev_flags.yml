@@ -3,9 +3,9 @@ image_width: 64
 num_classes: 200
 num_training: 100000
 num_val: 10000
-batch_size: 50
-epochs: 30
+batch_size: 20
+epochs: 1000
 train_dir:  "gs://tinyimage_net/train"
 validation_dir:  "gs://tinyimage_net/validation"
 model_name: "TinyImageNetModel"
-data_augmentation: TRUE
+data_augmentation: FALSE
