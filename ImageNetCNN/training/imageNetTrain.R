@@ -33,9 +33,10 @@ FLAGS <- flags(
     flag_integer("epochs", 1000),
     
     ## tuned parameters
-    #flag_numeric("learning_rate", 0.001),
-    flag_numeric("dropout_rate", 0.2),
-    flag_boolean("data_augmentation", FALSE)
+    flag_numeric("dropout_rate1", 0.75),
+    flag_numeric("dropout_rate2", 0.75),
+    flag_numeric("dropout_rate3", 0.75),
+    flag_boolean("data_augmentation", TRUE)
 )
 
 print(FLAGS)
@@ -44,12 +45,26 @@ model <- keras_model_sequential() %>%
     # 4 layers
     layer_conv_2d(filters = 32, kernel_size = c(3, 3), 
                   activation = "relu",
+                  padding = "same",
                   input_shape = c(FLAGS$image_height, FLAGS$image_width, 3)) %>%
+    layer_conv_2d(filters = 32, 
+                  kernel_size = c(3, 3), 
+                  activation = "relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+    layer_batch_normalization() %>%
+    layer_dropout(FLAGS$dropout_rate1) %>%
+    
+    layer_conv_2d(filters = 32, 
+                  kernel_size = c(3, 3), 
+                  padding = "same",
+                  activation = "relu") %>%
     layer_conv_2d(filters = 64, 
                   kernel_size = c(3, 3), 
                   activation = "relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+    layer_batch_normalization() %>%
+    layer_dropout(FLAGS$dropout_rate2) %>%
+    
     layer_conv_2d(filters = 128, 
                   kernel_size = c(3, 3), 
                   activation = "relu") %>%
@@ -58,10 +73,12 @@ model <- keras_model_sequential() %>%
                   kernel_size = c(3, 3), 
                   activation = "relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+    layer_batch_normalization() %>%
     
     layer_flatten() %>%
-    layer_dropout(rate = FLAGS$dropout_rate) %>%
+    layer_dense(units = 512, activation = "relu") %>%
     layer_dense(units = 1024, activation = "relu") %>%
+    layer_dropout(rate = FLAGS$dropout_rate3) %>%
     layer_dense(units = FLAGS$num_classes, activation = "softmax")
 
 ## Defined metric, compile
@@ -70,7 +87,7 @@ metric_top_5_categorical_accuracy <- function(y_true, y_pred) {
 }
 
 model %>% compile(
-    optimizer = optimizer_adam(),
+    optimizer = optimizer_adam(lr = 0.0001, decay = 1e-6),
     loss = "categorical_crossentropy",
     metrics = c('accuracy', top_5_accuracy = metric_top_5_categorical_accuracy)
 )
@@ -81,12 +98,13 @@ if (!FLAGS$data_augmentation) {
 } else {
     train_datagen <- image_data_generator(
         rescale = 1/255,
-        rotation_range = 20,
-        width_shift_range = 0.2,
+        rotation_range = 40,
+        width_shift_range = 0.2, 
         height_shift_range = 0.2,
-        shear_range = 0.2, 
+        shear_range = 0.2,
         zoom_range = 0.2,
-        horizontal_flip = TRUE
+        horizontal_flip = TRUE, 
+        fill_mode = "nearest"
     )
 }
 
@@ -107,13 +125,13 @@ validation_generator <- flow_images_from_directory(
     validation_datagen,
     target_size = c(FLAGS$image_height, FLAGS$image_width),
     batch_size = FLAGS$batch_size,
-    class_mode = "categorical",
+    class_mode = "categorical", 
     shuffle = TRUE
 )
 
 callbacks_list = list(
     callback_early_stopping(
-        patience = 30
+        patience = 100
     )
 )
 
