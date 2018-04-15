@@ -33,54 +33,73 @@ FLAGS <- flags(
     flag_integer("epochs", 1000),
     
     ## tuned parameters
-    flag_numeric("dropout_rate1", 0.75),
+    flag_numeric("dropout_rate1", 0.5),
     flag_numeric("dropout_rate2", 0.75),
     flag_numeric("dropout_rate3", 0.75),
-    flag_boolean("data_augmentation", TRUE)
+    flag_boolean("data_augmentation", TRUE),
+    flag_boolean("model1", TRUE)
 )
 
 print(FLAGS)
 
-model <- keras_model_sequential() %>%
-    # 4 layers
-    layer_conv_2d(filters = 32, kernel_size = c(3, 3), 
-                  activation = "relu",
-                  padding = "same",
-                  input_shape = c(FLAGS$image_height, FLAGS$image_width, 3)) %>%
-    layer_conv_2d(filters = 32, 
-                  kernel_size = c(3, 3), 
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-    layer_batch_normalization() %>%
-    layer_dropout(FLAGS$dropout_rate1) %>%
-    
-    layer_conv_2d(filters = 32, 
-                  kernel_size = c(3, 3), 
-                  padding = "same",
-                  activation = "relu") %>%
-    layer_conv_2d(filters = 64, 
-                  kernel_size = c(3, 3), 
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-    layer_batch_normalization() %>%
-    layer_dropout(FLAGS$dropout_rate2) %>%
-    
-    layer_conv_2d(filters = 128, 
-                  kernel_size = c(3, 3), 
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-    layer_conv_2d(filters = 128, 
-                  kernel_size = c(3, 3), 
-                  activation = "relu") %>%
-    layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-    layer_batch_normalization() %>%
-    
-    layer_flatten() %>%
-    layer_dense(units = 512, activation = "relu") %>%
-    layer_dense(units = 1024, activation = "relu") %>%
-    layer_dropout(rate = FLAGS$dropout_rate3) %>%
-    layer_dense(units = FLAGS$num_classes, activation = "softmax")
-
+if (!FLAGS$model1) {
+    model <- keras_model_sequential() %>%
+        # model type 1
+        layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = "relu",
+                      input_shape = c(FLAGS$image_height, FLAGS$image_width, 3)) %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_conv_2d(filters = 128, kernel_size = c(3, 3), activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_conv_2d(filters = 128, kernel_size = c(3, 3), activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_flatten() %>%
+        
+        layer_dense(units = 512, activation = "relu") %>%
+        layer_dropout(FLAGS$dropout_rate1) %>%
+        layer_dense(units = FLAGS$num_classes, activation = "softmax")
+} else {
+    model <- keras_model_sequential() %>%
+        # model type 2
+        layer_conv_2d(filters = 32, kernel_size = c(3, 3), 
+                      activation = "relu",
+                      padding = "same",
+                      input_shape = c(FLAGS$image_height, FLAGS$image_width, 3)) %>%
+        layer_conv_2d(filters = 32, 
+                      kernel_size = c(3, 3), 
+                      activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_batch_normalization() %>%
+        layer_dropout(FLAGS$dropout_rate1) %>%
+        
+        layer_conv_2d(filters = 32, 
+                      kernel_size = c(3, 3), 
+                      padding = "same",
+                      activation = "relu") %>%
+        layer_conv_2d(filters = 64, 
+                      kernel_size = c(3, 3), 
+                      activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_batch_normalization() %>%
+        layer_dropout(FLAGS$dropout_rate2) %>%
+        
+        layer_conv_2d(filters = 128, 
+                      kernel_size = c(3, 3), 
+                      activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_conv_2d(filters = 128, 
+                      kernel_size = c(3, 3), 
+                      activation = "relu") %>%
+        layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+        layer_batch_normalization() %>%
+        
+        layer_flatten() %>%
+        layer_dense(units = 512, activation = "relu") %>%
+        layer_dense(units = 1024, activation = "relu") %>%
+        layer_dropout(rate = FLAGS$dropout_rate3) %>%
+        layer_dense(units = FLAGS$num_classes, activation = "softmax")
+}
 ## Defined metric, compile
 metric_top_5_categorical_accuracy <- function(y_true, y_pred) {
     metric_top_k_categorical_accuracy(y_true, y_pred, k = 5) 
@@ -131,7 +150,7 @@ validation_generator <- flow_images_from_directory(
 
 callbacks_list = list(
     callback_early_stopping(
-        patience = 100
+        patience = 50
     )
 )
 
